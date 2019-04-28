@@ -1,0 +1,26 @@
+package com.learnrn;
+import android.widget.Toast;
+
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+
+import java.util.Map;
+import java.util.HashMap;
+
+public class ExampleInterface extends ReactContextBaseJavaModule{
+    public ExampleInterface(ReactApplicationContext reactContext){
+        super(reactContext);
+    }
+    @Override
+    public String getName(){
+        return "ExampleInterface";
+    }
+    @ReactMethod
+    public void HandleMessage(String aMessage){
+        Toast.makeText(getReactApplicationContext(), aMessage, 2000).show();
+    }
+
+}

@@ -7,8 +7,10 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, Dimensions, TextInput} from 'react-native';
-
+import {Platform, BackHandler, StyleSheet, Text, View, Dimensions, TextInput} from 'react-native';
+import {Navigator} from 'react-native-deprecated-custom-components';
+import LoginLeaf from './components/LoginLeaf';
+import WaitingLeaf from './components/WaitingLeaf';
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -20,70 +22,42 @@ let widthOfMargin = Dimensions.get('window').width * 0.05;
 export default class App extends Component {
   constructor(props){
     super(props);
-    this.state = {
-      inputedNum: '',
-      inputedPW: ''
+    this.renderScene = this.renderScene.bind(this);
+    this.configureScene = this.configureScene.bind(this);
+    this.handleBackAndroid = this.handleBackAndroid.bind(this);
+  }
+  componentDidMount() {
+    if(Platform.OS === 'android'){
+      BackHandler.addEventListener('hardwareBackPress', this.handleBackAndroid);
     }
-    this.updatePW = this.updatePW.bind(this);
   }
-  updateNum = (newText) => {
-    this.setState({
-      inputedNum: newText
-    });
+  componentWillUnmount() {
+    if(Platform.OS === 'android'){
+      BackHandler.removeEventListener('hardwareBackPress', this.handleBackAndroid);
+    }
   }
-  updatePW = (newText) => {
-    this.setState({
-      inputedPW: newText
-    });
+  configureScene = (route) => {
+    return Navigator.SceneConfigs.FadeAndroid;
+  }
+  renderScene = (router, navigator) => {
+    this.navigator = navigator;
+    switch(router.name){
+      case 'login':
+        return <LoginLeaf navigator={navigator}/>;
+      case 'waiting':
+        return <WaitingLeaf phoneNumber={router.phoneNumber} userPW={router.userPW} navigator={navigator}/>;
+    }
+  }
+  handleBackAndroid = () =>{
+    if(this.navigator.getCurrentRoutes().length > 1){
+      this.navigator.pop();
+      return true;
+    }
+    return false;
   }
   render() {
     return (
-      <View style={styles.container}>
-        <TextInput style={styles.textInputStyle} placeholder={'请输入手机号'} onChangeText={(newText) => this.updateNum(newText)}/>
-        <Text style={styles.textPromptStyle}>您输入的手机号：{this.state.inputedNum}</Text>
-        <TextInput style={styles.textInputStyle} placeholder={'请输入密码'} secureTextEntry={true} onChangeText={this.updatePW}/>
-        <Text style={styles.bigTextPrompt}>确定</Text>
-
-
-
-        {/* <Text style={styles.welcome}>Welcome to React Native!,你好34</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text> */}
-      </View>
+      <Navigator initialRoute={{name: 'login'}} configureScene={this.configureScene} renderScene={this.renderScene}/>
     );
   }
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  textInputStyle: {
-    margin: widthOfMargin,
-    backgroundColor: 'gray',
-    fontSize: 20
-  },
-  textPromptStyle: {
-    margin: widthOfMargin,
-    fontSize: 20
-  },
-  bigTextPrompt: {
-    margin: widthOfMargin,
-    backgroundColor: 'gray',
-    color: 'white',
-    textAlign: 'center',
-    fontSize: 30
-  }
-  // welcome: {
-  //   fontSize: 20,
-  //   textAlign: 'center',
-  //   margin: 10,
-  // },
-  // instructions: {
-  //   textAlign: 'center',
-  //   color: '#333333',
-  //   marginBottom: 5,
-  // },
-});
