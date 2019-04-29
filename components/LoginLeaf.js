@@ -3,7 +3,7 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, Navigator, NativeModules, Alert, StyleSheet, Text, View, Dimensions, TextInput} from 'react-native';
+import {Platform, DeviceEventEmitter, NativeModules, Alert, StyleSheet, Text, View, Dimensions, TextInput} from 'react-native';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -49,10 +49,14 @@ export default class LoginLeaf extends Component {
     })
   }
   userPressAddressBook = () => {
-    // var {NativeModules} = require('react-native');s
+    DeviceEventEmitter.addListener('AndroidToRNMessage', this.handleAndroidMessage.bind(this));
     let ExampleInterface = NativeModules.ExampleInterface;
-    console.log(NativeModules,'-----22---',ExampleInterface);
     ExampleInterface.HandleMessage('testMessage3455');
+  }
+  handleAndroidMessage = (aMessage) => {
+    console.log('handleAndroidMessage:' + aMessage);
+    let obj = JSON.parse(aMessage);
+    this.setState({inputedNum: obj.peerNumber});
   }
   render() {
     return (
