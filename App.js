@@ -7,20 +7,22 @@
  */
 
 import React, {Component} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, Image} from 'react-native';
+let nativeImagSource = require('nativeImageSource');
 export default class App extends Component {
   constructor(props){
     super(props);
   }
+ 
   render() {
+    let ades = {
+      android: 'android_search_white',
+      width: 96,
+      height: 96,
+    }
     return (
-      <View style={style.container}>
-        <View style={style.firstRow}>
-          <View style={styles.test1} />
-          <View style={styles.test2} />
-          <View style={styles.test3} />
-        </View>
-        <View style={styles.testPosition} />
+      <View style={styles.container}>
+        <Image style={styles.imageStyle} source={nativeImagSource(ades)} />
       </View>
     );
   }
@@ -28,37 +30,34 @@ export default class App extends Component {
 var styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    backgroundColor: 'grey'
   },
-  firstRow: {
-    height: 40,
-    top: 40,
-    backgroundColor: 'black',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center'
-  },
-  test1: {
-    width: 68,
-    height: 24,
-    backgroundColor: 'white',
-  },
-  test2: {
-    width: 40,
-    height: 24,
-    backgroundColor: 'white',
-  },
-  test3: {
+  imageStyle: {
+    margin: 2, backgroundColor: 'white',
+    height: 100,
     width: 100,
-    height: 24,
-    backgroundColor: 'white',
   },
-  testPosition: {
-    backgroundColor: 'grey',
-    height: 60,
-    width: 60,
-    position: 'absolute',
-    top: 150,
-    right: 50
-  }
+  icon: {
+    width: 100,
+    height:100,
+  },
+  sButtonStyle: {
+    fontSize: 20,
+    left: 130,
+    top: 50,
+    width: 150,
+    height: 35,
+    backgroundColor: 'grey'
+  },
+  bButtonStyle: {
+    fontSize: 20,
+    left: 130,
+    top: 130,
+    width: 150,
+    height: 70,
+    backgroundColor: 'grey'
+  },
 })
