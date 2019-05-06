@@ -7,57 +7,40 @@
  */
 
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, Image} from 'react-native';
-let nativeImagSource = require('nativeImageSource');
+import {StyleSheet, Text, View, TouchableNativeFeedback} from 'react-native';
+import {Navigator} from 'react-native-deprecated-custom-components'
+import Page1 from './components/Page1';
+import Page2 from './components/Page2';
+import Page3 from './components/Page3';
+import Page4 from './components/Page4';
+import AppKeyBoard from './components/AppKeyBoard';
+
+
 export default class App extends Component {
   constructor(props){
     super(props);
+    this.renderScene = this.renderScene.bind(this);
+  }
+  configureScene = (route) => {
+    return Navigator.SceneConfigs.FadeAndroid;
+  }
+  renderScene = (router, navigator) => {
+    switch(router.name){
+      case 'Page1':
+        return <Page1 navigator={navigator} />;
+      case 'Page2':
+        return <Page2 navigator={navigator} />;
+      case 'Page3':
+        return <Page3 navigator={navigator} />
+      case 'Page4':
+        return <Page4 navigator={navigator} />;
+    }
   }
  
   render() {
-    let ades = {
-      android: 'android_search_white',
-      width: 96,
-      height: 96,
-    }
     return (
-      <View style={styles.container}>
-        <Image style={styles.imageStyle} source={nativeImagSource(ades)} />
-      </View>
+      <AppKeyBoard />
+      // <Navigator initialRoute={{name: 'Page1'}} configureScene={this.configureScene} renderScene={this.renderScene} />
     );
   }
 }
-var styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    backgroundColor: 'grey'
-  },
-  imageStyle: {
-    margin: 2, backgroundColor: 'white',
-    height: 100,
-    width: 100,
-  },
-  icon: {
-    width: 100,
-    height:100,
-  },
-  sButtonStyle: {
-    fontSize: 20,
-    left: 130,
-    top: 50,
-    width: 150,
-    height: 35,
-    backgroundColor: 'grey'
-  },
-  bButtonStyle: {
-    fontSize: 20,
-    left: 130,
-    top: 130,
-    width: 150,
-    height: 70,
-    backgroundColor: 'grey'
-  },
-})
