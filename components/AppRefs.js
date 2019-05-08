@@ -4,7 +4,7 @@ export default class AppRefs extends Component{
     constructor(props){
         super(props);
         this.state ={textInputValue: ''};
-        this.buttonPressed = thi.buttonPressed.bind(this);
+        this.buttonPressed = this.buttonPressed.bind(this);
     } 
     buttonPressed = () => {    //当按钮被按下时执行此函数
         let textInputValue = 'new Value';
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'grey'
+        backgroundColor: 'white'
     },
     buttonStyle: {
         fontSize: 20,

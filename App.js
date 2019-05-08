@@ -14,6 +14,10 @@ import Page2 from './components/Page2';
 import Page3 from './components/Page3';
 import Page4 from './components/Page4';
 import AppKeyBoard from './components/AppKeyBoard';
+import AppRefs from './components/AppRefs';
+import AppPosition from './components/AppPosition';
+import AppAutoHeight from './components/AppAutoHeight';
+import AppDiary from './components/Diary/AppDiary';
 
 
 export default class App extends Component {
@@ -39,7 +43,8 @@ export default class App extends Component {
  
   render() {
     return (
-      <AppKeyBoard />
+      // <Text>呵呵</Text>
+      <AppDiary />
       // <Navigator initialRoute={{name: 'Page1'}} configureScene={this.configureScene} renderScene={this.renderScene} />
     );
   }
