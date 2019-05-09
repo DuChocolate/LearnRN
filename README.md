@@ -9,3 +9,11 @@ A：自0.43后起，Navigator已从react-native中移除，需安装react-native
 2、Q：'Warning: BackAndroid is deprecated. Please use BackHandler instead'
 A：使用 BackHandler 替换 BackAndroid。
 
+3、ListView已废弃，可使用FlatList、SectionList代替。
+
+4、AsyncStorage已从react-native中移除，
+解决办法：
+npm install @react-native-community/async-storage
+react-native link @react-native-community/async-storage
+使用：import AsyncStorage from '@react-native-community/async-storage';
+

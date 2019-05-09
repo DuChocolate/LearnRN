@@ -9,14 +9,16 @@ export default class AutoExpandingTextInput extends Component{
         super(props);
         this.state = {
             uiCode: 1,
+            diaryList: [],
             diaryMood: null,
             diaryTime: '读取中......',
             diaryTitle: '读取中......',
             diaryBody: '读取中......',
         };
         this.bindAllMyFunction();    //执行回调函数绑定操作
+        // DataHandler.clearStorage();
         DataHandler.getAllTheDiary().then((result) => {    //获取所有的日志数据，日记数据保存在DataHandler中
-            this.setState(result);    //返回值是最后一篇日记的数据
+            this.setState({diaryList: result});    //返回值是最后一篇日记的数据
         }).catch((error) => {
             console.log(error);
         })
@@ -45,7 +47,7 @@ export default class AutoExpandingTextInput extends Component{
     //写日记界面保存日记并返回日记列表界面的处理函数
     saveDiaryAndReturn = (newDiaryMood, newDiaryBody, newDiaryTitle) => {
         DataHandler.saveDiary(newDiaryMood, newDiaryBody, newDiaryTitle).then((result)=>{
-            this.setState(result);
+            this.setState({diaryList: result.diaryList,uiCode: result.uiCode});
         }).catch((error)=>{
             console.log(error);
         })
@@ -56,8 +58,9 @@ export default class AutoExpandingTextInput extends Component{
     searchKeyword = (keyword) => {    //搜索框中有输入时的处理函数，仅实现原型
         console.log('search keyword is:' + keyword);
     }
-    selectLististItem = () => {     //日记列表中某条记录被选中时的处理函数
-        this.setState({uiCode: 2});
+    selectLististItem = (aIndex) => {     //日记列表中某条记录被选中时的处理函数
+        let rValue = DataHandler.getDiaryAtIndex(aIndex);
+        this.setState(rValue);
     }
     showDiaryList = () => {
         return(    //注意，如何将状态机常量作为属性向下层React Native组件传递
@@ -66,6 +69,7 @@ export default class AutoExpandingTextInput extends Component{
                 fakeListMood={this.state.diaryMood}
                 selectLististItem={this.selectLististItem}
                 searchKeyword={this.searchKeyword}
+                diaryList={this.state.diaryList}
                 writeDiary={this.writeDiary} />
         );
     }

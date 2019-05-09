@@ -12,13 +12,7 @@ export default class DataHandler{
         return new Promise(function(resolve, reject){
             AsyncStorage.getAllKeys().then((keys)=>{    //获取存储中所有的key
                 if(keys.length===0){    //判断存储总是否有数据
-                    let returnValue = {
-                        diaryTime: '没有历史日记',
-                        diaryTitle: '没有历史日记',
-                        diaryBody: ''
-                    };
-                    resolve(returnValue);    //Promise机制中的成功返回
-                    console.log('注意，resolve后的语句还会被执行，因此resolve后如果有代码，结束处理必须要跟return语句');
+                    resolve(DataHandler.realDairyList);    //Promise机制中的成功返回
                     return;
                 }
                 AsyncStorage.multiGet(keys).then((results)=>{    //通过keys获取所有数据
@@ -26,48 +20,27 @@ export default class DataHandler{
                     for(let counter = 0; counter < resultsLength; counter++){
                         //取得数据并利用JSON类的parse方法生成对象，插入日记列表
                         DataHandler.realDairyList[counter] = JSON.parse(results[counter][1]);
-                    }
-                    DataHandler.bubleSortDiaryList();    //日记列表排序
-                    if(resultsLength > 0){       //日记列表中有数据，取出最后一条数据
-                        resultsLength--;
-                        DataHandler.listIndex = resultsLength;
-                        let newMoodIcon;
-                        switch(DataHandler.realDairyList[resultsLength].mood){
+                        switch(DataHandler.realDairyList[counter].mood){
                             case 2:
-                                newMoodIcon = angryMood;
+                                DataHandler.realDairyList[counter].mood = angryMood;
                                 break;
                             case 3:
-                                newMoodIcon = sadMood;
+                                DataHandler.realDairyList[counter].mood = sadMood;
                                 break;
                             case 4:
-                                newMoodIcon = happyMood;
+                                DataHandler.realDairyList[counter].mood = happyMood;
                                 break;
                             case 5:
-                                newMoodIcon = miseryMood;
+                                DataHandler.realDairyList[counter].mood = miseryMood;
                                 break;
                             default:
-                                newMoodIcon = peaceMood;
+                                DataHandler.realDairyList[counter].mood = peaceMood;
                         }
-                        let newtitle = DataHandler.realDairyList[resultsLength].title;
-                        let newbody = DataHandler.realDairyList[resultsLength].body;
-                        //利用Date的构造函数，从字符串中得到Date类型数据
-                        let ctime = new Date(DataHandler.realDairyList[resultsLength].time);
-                        let timeString = '' + ctime.getFullYear() + '年' + (ctime.getMonth() + 1) + '月' + ctime.getDate() + '日  星期' + (ctime.getDay() + 1) + '  ' + ctime.getHours() + ':' + ctime.getMinutes();
-                        let rValue = {
-                            diaryMood: newMoodIcon,
-                            diaryTime: timeString,
-                            diaryTitle: newtitle,
-                            diaryBody: newbody
-                        };
-                        resolve(rValue);   //Promise机制中的成功返回
-                    }else{     //日记列表中没有数据
-                        let returnValue = {
-                            diaryTime: '没有历史日记',
-                            diaryTitle: '没有历史日记',
-                            diaryBody: ''
-                        }
-                        resolve(returnValue);
+                        let atime = new Date(DataHandler.realDairyList[counter].time);
+                        DataHandler.realDairyList[counter].time = '' + atime.getFullYear() + '年' + (atime.getMonth() + 1) + '月' + atime.getDate() + '日  星期' + (atime.getDay() + 1) + '  ' + atime.getHours() + ':' + atime.getMinutes();
                     }
+                    DataHandler.bubleSortDiaryList();    //日记列表排序
+                    resolve(DataHandler.realDairyList);               
                 }).catch((error) => {
                     console.log(error);
                 })
@@ -75,14 +48,12 @@ export default class DataHandler{
                 console.log('A error happens while read all the diary.');
                 console.log(error);
                 AsyncStorage.clear();
-                let aValue = {
-                    diaryTime: '没有历史日记',
-                    diaryTitle: '没有历史日记',
-                    diaryBody: ''
-                };
-                resolve(aValue);
+                resolve(DataHandler.realDairyList);
             })
         });
+    }
+    static clearStorage() {
+        AsyncStorage.clear();
     }
     static bubleSortDiaryList() {   //因为AsyncStorage API不能保证读取的顺序
         let tempObj;     //使用冒泡排序对日记列表进行排序
@@ -97,72 +68,40 @@ export default class DataHandler{
         }
     }
     static getPreviousDiary(){    //请求上一篇日记数据的处理函数
-        if(DataHandler.listIndex === 0){
+        if(DataHandler.listIndex < 1){
             return null;    //已经显示的是第一篇日记
         }
         DataHandler.listIndex--;
-        let resultsLength = DataHandler.listIndex;
-        let newMoodIcon;
-        switch(DataHandler.realDairyList[resultsLength].mood){
-            case 2:
-                newMoodIcon = angryMood;
-                break;
-            case 3:
-                newMoodIcon = sadMood;
-                break;
-            case 4:
-                newMoodIcon = happyMood;
-                break;
-            case 5:
-                newMoodIcon = miseryMood;
-                break;
-            default:
-                newMoodIcon = peaceMood;
-        }
-        let newtitle = DataHandler.realDairyList[resultsLength].title;
-        let newbody = DataHandler.realDairyList[resultsLength].body;
-        let ctime = new Date(DataHandler.realDairyList[resultsLength].time);
-        let timeString = '' + ctime.getFullYear() + '年' + (ctime.getMonth() + 1) + '月' + ctime.getDate() + '日  星期' + (ctime.getDay() + 1) + '  ' + ctime.getHours() + ':' + ctime.getMinutes();
         return {
-            diaryMood: newMoodIcon,
-            diaryTime: timeString,
-            diaryTitle: newtitle,
-            diaryBody: newbody
-        };
+            uiCode: 2,
+            diaryTime: DataHandler.realDairyList[DataHandler.listIndex].time,
+            diaryTitle: DataHandler.realDairyList[DataHandler.listIndex].title,
+            diaryMood: DataHandler.realDairyList[DataHandler.listIndex].mood,
+            diaryBody: DataHandler.realDairyList[DataHandler.listIndex].body,
+        }
+    }
+    static getDiaryAtIndex = (aIndex) => {   //获取第aIndex篇日记
+        DataHandler.listIndex = aIndex;
+        return {
+            uiCode: 2,
+            diaryTime: DataHandler.realDairyList[aIndex].time,
+            diaryTitle: DataHandler.realDairyList[aIndex].title,
+            diaryMood: DataHandler.realDairyList[aIndex].mood,
+            diaryBody: DataHandler.realDairyList[aIndex].body,
+        }
     }
     static getNextDiary(){     //请求下一篇日记数据的处理函数
-        if(DataHandler.listIndex === (DataHandler.realDairyList.length - 1)){
+        if(DataHandler.listIndex >= (DataHandler.realDairyList.length - 1)){
             return null;
         }
         DataHandler.listIndex++;
-        let resultsLength = DataHandler.listIndex;
-        let newMoodIcon;
-        switch(DataHandler.realDairyList[resultsLength].mood){
-            case 2:
-                newMoodIcon = angryMood;
-                break;
-            case 3:
-                newMoodIcon = sadMood;
-                break;
-            case 4:
-                newMoodIcon = happyMood;
-                break;
-            case 5:
-                newMoodIcon = miseryMood;
-                break;
-            default:
-                newMoodIcon = peaceMood;
-        }
-        let newtitle = DataHandler.realDairyList[resultsLength].title;
-        let newbody = DataHandler.realDairyList[resultsLength].body;
-        let ctime = new Date(DataHandler.realDairyList[resultsLength].time);
-        let timeString = '' + ctime.getFullYear() + '年' + (ctime.getMonth() + 1) + '月' + ctime.getDate() + '日  星期' + (ctime.getDay() + 1) + '  ' + ctime.getHours() + ':' + ctime.getMinutes();
         return {
-            diaryMood: newMoodIcon,
-            diaryTime: timeString,
-            diaryTitle: newtitle,
-            diaryBody: newbody
-        };
+            uiCode: 2,
+            diaryTime: DataHandler.realDairyList[DataHandler.listIndex].time,
+            diaryTitle: DataHandler.realDairyList[DataHandler.listIndex].title,
+            diaryMood: DataHandler.realDairyList[DataHandler.listIndex].mood,
+            diaryBody: DataHandler.realDairyList[DataHandler.listIndex].body,
+        }
     }
     static saveDiary(newDiaryMood, newDiaryBody, newDiaryTitle){
         return new Promise(function(resolve, reject){
@@ -172,7 +111,7 @@ export default class DataHandler{
                 title: newDiaryTitle,
                 body: newDiaryBody,
                 mood: newDiaryMood,
-                time: currentTime,
+                time: timeString,
                 sectionID: '' + currentTime.getFullYear() + ' 年 ' + (currentTime.getMonth() + 1) + '月',    //sectionID用来对日记列表进行分段显示
                 index: Date.parse(currentTime),   //从当前时间生成唯一值，用来索引日记列表，这个值精确到毫秒，可以认为它是唯一的
             }
@@ -197,14 +136,12 @@ export default class DataHandler{
                     default:
                         newMoodIcon = peaceMood;
                 }
-                let aValue = {
+                DataHandler.realDairyList[totalLength].mood = newMoodIcon;
+                let rValue = {
+                    diaryList: DataHandler.realDairyList,
                     uiCode: 1,
-                    diaryTime: timeString,
-                    diaryTitle: newDiaryTitle,
-                    diaryMood: newMoodIcon,
-                    diaryBody: newDiaryBody
                 };
-                resolve(aValue);
+                resolve(rValue);
             }).catch((error) => {
                 console.log('Save failed, error:' + error.message);
             })

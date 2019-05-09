@@ -18,6 +18,10 @@ import AppRefs from './components/AppRefs';
 import AppPosition from './components/AppPosition';
 import AppAutoHeight from './components/AppAutoHeight';
 import AppDiary from './components/Diary/AppDiary';
+import AppScroll from './components/AppScroll';
+import AppWaitingIndicator from './components/AppWaitingIndicator';
+import AppProgress from './components/AppProgress';
+import AppSwitch from './components/AppSwitch';
 
 
 export default class App extends Component {
@@ -44,7 +48,7 @@ export default class App extends Component {
   render() {
     return (
       // <Text>呵呵</Text>
-      <AppDiary />
+      <AppSwitch />
       // <Navigator initialRoute={{name: 'Page1'}} configureScene={this.configureScene} renderScene={this.renderScene} />
     );
   }
